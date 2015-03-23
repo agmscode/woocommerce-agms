@@ -12,7 +12,7 @@ Vagrant.configure(2) do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "precise32"
+  config.vm.box = "ubuntu/trusty64"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -22,7 +22,7 @@ Vagrant.configure(2) do |config|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
-  # config.vm.network "forwarded_port", guest: 80, host: 8080
+  config.vm.network "forwarded_port", guest: 80, host: 8080
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -64,8 +64,17 @@ Vagrant.configure(2) do |config|
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
-  # config.vm.provision "shell", inline: <<-SHELL
-  #   sudo apt-get update
-  #   sudo apt-get install -y apache2
-  # SHELL
+  config.vm.provision "shell", inline: <<-SHELL
+    sudo apt-get update
+    sudo apt-get install -y apache2
+    # Set mysql server root password as mysql
+    sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password mysql'
+    sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password mysql'
+    sudo apt-get install -y mysql-server-5.5
+    sudo apt-get install -y php5 libapache2-mod-php5
+    sudo apt-get install -y php5-mysql php5-curl php5-gd \
+      php5-intl php-pear php5-imagick php5-imap php5-mcrypt \
+      php5-memcache php5-ming php5-ps php5-pspell php5-recode \
+      php5-snmp php5-sqlite php5-tidy php5-xmlrpc php5-xsl
+  SHELL
 end
