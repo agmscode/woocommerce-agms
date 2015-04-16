@@ -7,3 +7,6 @@
 
 - name: Install cURL
   apt:  pkg=curl state=latest
+
+- name: Install Unzip
+  apt:  pkg=unzip state=latest

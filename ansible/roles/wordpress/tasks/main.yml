@@ -1,6 +1,6 @@
 ---
 - name: Unzip Wordpress
-  unarchive: src:/vagrant/ansible/roles/wordpress/source/wordpress-4.1.1.zip dest=/vagrant/
+  unarchive: src=/vagrant/ansible/roles/wordpress/source/wordpress-4.1.1.zip dest=/vagrant/ copy=no
 
 - name: Create wordpress configuration
   template: src=wordpress.php dest=/vagrant/wordpress/wp-config.php
@@ -9,4 +9,4 @@
   file: path=/vagrant/wordpress/wp-content/uploads state=directory owner=vagrant group=vagrant mode=0777
 
 - name: Install WooCommerce
-  unarchive: src:/vagrant/ansible/roles/wordpress/source/woocommerce.zip dest=/vagrant/wordpress/wp-content/plugins/
+  unarchive: src=/vagrant/ansible/roles/wordpress/source/woocommerce.zip dest=/vagrant/wordpress/wp-content/plugins/ copy=no

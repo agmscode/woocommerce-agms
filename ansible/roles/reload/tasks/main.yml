@@ -1,0 +1,9 @@
+---
+- service: name=mysql state=restarted
+
+- service: name=php5-fpm state=restarted
+
+- service: name=nginx state=restarted
+
+
+
