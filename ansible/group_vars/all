@@ -1,0 +1,8 @@
+---
+server_hostname: localhost
+wordpress_version: 4.1.*
+wordpress_folder: wordpress
+php_fpm_socket: /var/run/php-fpm.sock
+database_name: wordpress
+database_user: wordpress
+database_password: mywordpressdatabasepassword

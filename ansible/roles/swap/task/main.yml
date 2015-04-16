@@ -1,0 +1,47 @@
+- name: Create swap file
+  command: dd if=/dev/zero of=/var/swap.1 bs=1024 count=512M
+           creates="/var/swap.1"
+  tags:
+    - swap.file.create
+
+
+- name: Change swap file permissions
+  file: path="/var/swap.1"
+        owner=root
+        group=root
+        mode=0600
+  tags:
+    - swap.file.permissions
+
+
+- name: "Check swap file type"
+  command: file /var/swap.1
+  register: swapfile
+  tags:
+    - swap.file.mkswap
+
+
+- name: Make swap file
+  command: "sudo mkswap /var/swap.1"
+  when: swapfile.stdout.find('swap file') == -1
+  tags:
+    - swap.file.mkswap
+
+
+- name: Write swap entry in fstab
+  mount: name=none
+         src=/var/swap.1
+         fstype=swap
+         opts=sw
+         passno=0
+         dump=0
+         state=present
+  tags:
+    - swap.fstab
+
+
+- name: Mount swap
+  command: "swapon /var/swap.1"
+  when: ansible_swaptotal_mb < 1
+  tags:
+    - swap.file.swapon

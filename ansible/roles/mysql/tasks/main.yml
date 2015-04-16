@@ -1,0 +1,18 @@
+---
+- name: Install MySQL server
+  sudo: yes
+  apt:  pkg=mysql-server-5.5 state=latest
+
+- name: Allow access to MySQL from anywhere
+  sudo: yes
+  lineinfile: dest=/etc/mysql/my.cnf regexp="^bind-address" "line=#bind-address = 0.0.0.0"
+  notify: restart mysql
+
+- name: Create MySQL database wordpress
+  command: mysql -u root -e "CREATE DATABASE IF NOT EXISTS wordpress;"
+
+- name: Add wordpress user allow connect from anywhere to MySQL
+  command: mysql -u root -e "CREATE USER 'wordpress'@'%' IDENTIFIED BY 'mywordpressdatabasepassword'; FLUSH PRIVILEGES;"
+
+- name: Grant all privileges on wordpress database
+  command: mysql -u root -e "GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpress'@'%'; FLUSH PRIVILEGES;"
