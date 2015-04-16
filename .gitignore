@@ -5,6 +5,12 @@
 sitemap.xml
 sitemap.xml.gz
 wordpress/*
+!wordpress/wp-content
+wordpress/wp-content/*
+!wordpress/wp-content/plugins
+wordpress/wp-content/plugins/*
+!wordpress/wp-content/plugins/woocommerce-agms
+
 wp-config.php
 wp-content/advanced-cache.php
 wp-content/backup-db/
