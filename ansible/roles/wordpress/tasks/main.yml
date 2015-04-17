@@ -10,3 +10,6 @@
 
 - name: Install WooCommerce
   unarchive: src=/vagrant/ansible/roles/wordpress/source/woocommerce.zip dest=/vagrant/wordpress/wp-content/plugins/ copy=no
+
+- name: Install Store Front
+  unarchive: src=/vagrant/ansible/roles/wordpress/source/storefront.1.4.3.zip dest=/vagrant/wordpress/wp-content/themes/ copy=no
