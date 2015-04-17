@@ -191,7 +191,7 @@ class AgmsTransaction_Gateway extends WC_Payment_Gateway {
         // Get the values we need
         $r['response_code']             = $resp['STATUS_CODE'];
         $r['response_reason_code']      = $resp["TRANSACTION_ID"];
-        $r['response_reason_text']      = $resp["STATUS_MESSAGE"];
+        $r['response_reason_text']      = $resp["STATUS_MSG"];
 
         // Test the code to know if the transaction went through or not.
         // 1 means the transaction was a success
