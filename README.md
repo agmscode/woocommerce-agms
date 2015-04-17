@@ -1,11 +1,13 @@
-# WooCommerce Agms Plugin [![Build Status](https://travis-ci.org/agmscode/woocommerce-agms.png?branch=master)](https://travis-ci.org/agmscode/woocommerce-agms)
+# WooCommerce Agms Plugin 
 
 The WooCommerce AGMS plugin provides Avant-Garde Gateway Payment in WooCommerce.
 
 ## Installation
 
-Download the woocommerce-agms.zip to wp-content/plugin directory.
-Unzip it and then enable in wordpress administrator panel.
+Download the woocommerce-agms.zip and unzip it.
+Copy the wordpress/wp-content/pluggin/woocommerce-agms folder inside pluggin
+folder of your wordpress install.
+Enable woocommerce-agms in wordpress administrator panel.
 
 ## Usage
 In Checkout Tab of WooCommerce you will see an option for Agms Gateway
