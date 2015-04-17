@@ -6,7 +6,7 @@
   roles:
     - common
     - php-fpm
-
+    - mysql
     - nginx
     - wordpress
     - reload
