@@ -13,7 +13,7 @@ In Checkout Tab of WooCommerce you will see an option for Agms Gateway
 
 ## Release Notes
 
-Support for Invoicing and Recurring are not yet completed and are still under development.
+Support for Transaction Processing only.
 
 
 ## Documentation
@@ -28,7 +28,7 @@ See the LICENSE file.
 
 ## Development
 
-Test cases can be run with: `bundle exec rake test`
+The git repository is configured as Vagrant VM. Fireup with `vagrant up`
 
 ## Contributing
 
