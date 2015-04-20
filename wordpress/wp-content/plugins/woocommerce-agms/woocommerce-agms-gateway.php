@@ -200,7 +200,6 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
             "RetURL"            => WC()->api_request_url( 'agms_gateway' )
         );
 
-
         // Send this payload to Agms Gateway for processing
         $response = wp_remote_post( $environment_url, array(
                 'method'    => 'POST',
@@ -210,7 +209,23 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
                 'headers'   => Agms::buildRequestHeader('ReturnHostedPaymentSetup')
             )
         );
-        die('Not Implemented');
+        if ( is_wp_error( $response ) )
+            throw new Exception( __( 'We are currently experiencing problems trying to connect to this payment gateway. Sorry for the inconvenience.', 'agms_gateway' ) );
+
+        if ( empty( $response['body'] ) )
+            throw new Exception( __( 'Agms Gateway\'s Response was empty.', 'agms_gateway' ) );
+
+
+        // Retrieve the body's response if no errors found
+        $response_body = wp_remote_retrieve_body( $response );
+        // Parse the response into something we can read
+        $hash = Agms::parseResponse($response_body, 'ReturnHostedPaymentSetup');
+
+        return array(
+            'result'   => 'success',
+            'redirect' => 'https://gateway.agms.com/HostedPaymentForm/HostedPaymentPage.aspx?hash=' . $hash
+        );
+
     }
 
     // Submit payment and handle standard payment response

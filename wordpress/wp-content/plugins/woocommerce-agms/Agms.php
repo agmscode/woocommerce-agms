@@ -23,7 +23,9 @@ class Agms
             case 'ProcessTransaction':
                 $param = 'objparameters';
                 break;
-
+            case 'ReturnHostedPaymentSetup':
+                $param = 'objparameters';
+                break;
         }
 
         $xmlHeader = '<?xml version="1.0" encoding="utf-8"?>
