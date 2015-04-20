@@ -43,7 +43,6 @@ xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
             $xmlBody = $xmlBody . "<$key>$value</$key>";
         }
         $payload = $xmlHeader . $xmlBody . $xmlFooter;
-        var_dump($payload);
         return $payload;
 
     }

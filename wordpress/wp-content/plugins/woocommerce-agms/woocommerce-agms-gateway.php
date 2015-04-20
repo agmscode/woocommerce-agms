@@ -44,10 +44,7 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
         $this->has_fields = true;
 
         // Supports the default credit card form
-        $this->supports = array(
-            'default_credit_card_form',
-            'refunds'
-        );
+        $this->supports = array('default_credit_card_form');
 
         // This basically defines your settings which are then loaded with init_settings()
         $this->init_form_fields();
@@ -61,9 +58,6 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
             $this->$setting_key = $value;
         }
 
-        // Set Default mode
-        $this->mode = 'direct';
-        
         // Lets check for SSL
         add_action( 'admin_notices', array( $this,  'do_ssl_check' ) );
 
@@ -87,9 +81,10 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
                 'default'   => 'no',
             ),
             'mode' => array(
-                'title'     => __( 'Direct / Form', 'agms_gateway' ),
+                'title'     => __( 'Gateway Mode', 'agms_gateway' ),
                 'label'     => __( 'Select Gateway Mode', 'agms_gateway' ),
-                'type'      => 'radio',
+                'type'      => 'select',
+                'desc_tip' => __('Select the Gateway Mode'),
                 'default'   => 'direct',
                 'options'   => array('direct' => 'Direct Mode', 'form' => 'Form Mode')
             ),
@@ -129,9 +124,18 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
         );
     } // End init_form_fields()
 
+    /*
+     * Payment form on checkout
+     */
+    public function payment_fields(){
+        if($this->mode == 'direct'){
+            $this->credit_card_form(array( 'fields_have_names' => false ));
+        }
+    }
     // Generic function to trigger action
     public function process_payment($order_id){
         if ($this->mode == 'form') {
+            $this->has_fields = false;
             return $this->process_form_payment($order_id);
         }
         elseif ($this->mode == 'direct') {
@@ -144,8 +148,71 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
 
     // Submit payment and handle form payment response
     private function process_form_payment( $order_id ) {
+        global $woocommerce;
+
+        // Get this Order's information so that we know
+        // who to charge and how much
+        $customer_order = new WC_Order( $order_id );
+
+        //  URL to post to
+        $environment_url = 'https://gateway.agms.com/roxapi/AGMS_HostedPayment.asmx';
+
+        // Agms Gateway Payload
+        $payload = array(
+            // Agms Gateway Credentials and API Info
+            "GatewayUserName"     => $this->username,
+            "GatewayPassword"     => $this->password,
+
+            // Order total
+            "Amount"              => $customer_order->order_total,
+
+            "TransactionType"     => 'sale',
+            "InvoiceID"           => str_replace( "#", "", $customer_order->get_order_number() ),
+
+            // Billing Information
+            "FirstName"             => $customer_order->billing_first_name,
+            "LastName"              => $customer_order->billing_last_name,
+            "Address1"              => $customer_order->billing_address_1,
+            "City"                  => $customer_order->billing_city,
+            "State"                 => $customer_order->billing_state,
+            "Zip"                   => $customer_order->billing_postcode,
+            "Country"               => $customer_order->billing_country,
+            "Phone"                 => $customer_order->billing_phone,
+            "EMail"                 => $customer_order->billing_email,
+
+            // Shipping Information
+            "ShippingFirstName"     => $customer_order->shipping_first_name,
+            "ShippingLastName"      => $customer_order->shipping_last_name,
+            "ShippingCompany"       => $customer_order->shipping_company,
+            "ShippingAddress1"      => $customer_order->shipping_address_1,
+            "ShippingCity"          => $customer_order->shipping_city,
+            "ShippingCountry"       => $customer_order->shipping_country,
+            "ShippingState"         => $customer_order->shipping_state,
+            "ShippingZip"           => $customer_order->shipping_postcode,
+
+            // Some Customer Information
+            "OrderID"             => $customer_order->user_id,
+            "IPAddress"         => $_SERVER['REMOTE_ADDR'],
+
+            // Default Values
+            "UsageCount"        => 1,
+            "HPPFormat"         => 1,
+            "RetURL"            => WC()->api_request_url( 'agms_gateway' )
+        );
+
+
+        // Send this payload to Agms Gateway for processing
+        $response = wp_remote_post( $environment_url, array(
+                'method'    => 'POST',
+                'body'      => Agms::buildRequestBody($payload, 'ReturnHostedPaymentSetup'),
+                'timeout'   => 90,
+                'sslverify' => true,
+                'headers'   => Agms::buildRequestHeader('ReturnHostedPaymentSetup')
+            )
+        );
         die('Not Implemented');
     }
+
     // Submit payment and handle standard payment response
     private function process_standard_payment( $order_id ) {
         global $woocommerce;
