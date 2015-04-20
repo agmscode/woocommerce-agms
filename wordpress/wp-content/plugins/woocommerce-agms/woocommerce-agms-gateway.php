@@ -2,16 +2,26 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
+/*
+ * Agms Methods for Gateway
+ */
+include_once('agms.php');
+
 /**
- * Functions for interfacing with Stripe's API
+ * Agms Gateway
  *
- * @class       AgmsTransaction
- * @version     0.1.0
+ * @class 		WC_Agms_Gateway
+ * @extends		WC_Payment_Gateway
+ * @version		0.2.0
+ * @package		WooCommerce/Classes/Payment
  * @author      Maanas Royy
  */
 
-class AgmsTransaction_Gateway extends WC_Payment_Gateway {
-    // Setup our Gateway's id, description and other values
+class WC_Agms_Gateway extends WC_Payment_Gateway {
+    /*
+     * Constructor
+     * Setup our Gateway's id, description and other values
+     */
     function __construct() {
 
         // The global ID for this Payment method
@@ -34,7 +44,10 @@ class AgmsTransaction_Gateway extends WC_Payment_Gateway {
         $this->has_fields = true;
 
         // Supports the default credit card form
-        $this->supports = array( 'default_credit_card_form' );
+        $this->supports = array(
+            'default_credit_card_form',
+            'refunds'
+        );
 
         // This basically defines your settings which are then loaded with init_settings()
         $this->init_form_fields();
@@ -165,15 +178,12 @@ class AgmsTransaction_Gateway extends WC_Payment_Gateway {
         // Send this payload to Agms Gateway for processing
         $response = wp_remote_post( $environment_url, array(
             'method'    => 'POST',
-            'body'      => $this->buildPayload($payload),
+            'body'      => Agms::buildRequestBody($payload, 'ProcessTransaction'),
             'timeout'   => 90,
-            'sslverify' => false,
-            'headers'   => array(
-                "Accept" => "application/xml",
-                "Content-type" => "text/xml; charset=utf-8",
-                "SOAPAction" => "https://gateway.agms.com/roxapi/ProcessTransaction"
+            'sslverify' => true,
+            'headers'   => Agms::buildRequestHeader('ProcessTransaction')
             )
-        ) );
+        );
 
         if ( is_wp_error( $response ) )
             throw new Exception( __( 'We are currently experiencing problems trying to connect to this payment gateway. Sorry for the inconvenience.', 'agms_gateway' ) );
@@ -186,7 +196,7 @@ class AgmsTransaction_Gateway extends WC_Payment_Gateway {
         $response_body = wp_remote_retrieve_body( $response );
 
         // Parse the response into something we can read
-        $resp = $this->parseResponse($response_body);
+        $resp = Agms::parseResponse($response_body, 'ProcessTransaction');
 
         // Get the values we need
         $r['response_code']             = $resp['STATUS_CODE'];
@@ -220,53 +230,5 @@ class AgmsTransaction_Gateway extends WC_Payment_Gateway {
 
     }
 
-    // Build payload in xml format
-    private function buildPayload($data, $op='ProcessTransaction'){
-        $xmlHeader = '<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <ProcessTransaction xmlns="https://gateway.agms.com/roxapi/">
-      <objparameters>';
-        $xmlFooter = '</objparameters>
-    </ProcessTransaction>
-  </soap:Body>
-</soap:Envelope>';
-        $xmlBody = '';
-        foreach ($data as $key => $value) {
-            $xmlBody = $xmlBody . "<$key>$value</$key>";
-        }
-        $payload = $xmlHeader . $xmlBody . $xmlFooter;
-        return $payload;
-    }
 
-    // Parse Response from xml to object
-    private function parseResponse($data, $op='ProcessTransaction'){
-        $xml = new \SimpleXMLElement($data);
-        $xml = $xml->xpath('/soap:Envelope/soap:Body');
-        $xml = $xml[0];
-        $data = json_decode(json_encode($xml));
-        $opResponse = $op . 'Response';
-        $opResult = $op . 'Result';
-        $arr = $this->object2array($data->$opResponse->$opResult);
-        return $arr;
-    }
-
-    /**
-     * Convert object to array
-     *
-     * @return array
-     */
-    private function object2array($data)
-    {
-        if (is_array($data) || is_object($data)) {
-            $result = array();
-            foreach ($data as $key => $value) {
-                $result[$key] = $this->object2array($value);
-            }
-            return $result;
-        }
-        return $data;
-    }
 }

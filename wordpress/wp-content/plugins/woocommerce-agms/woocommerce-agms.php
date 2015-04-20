@@ -6,9 +6,11 @@ Description: Extends WooCommerce by Adding the AGMS Payment Gateway.
 Version: 0.1.0
 Author: Maanas Royy, AGMS
 Author URI: https://github.com/maanas
+License: MIT
 */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 
 // Include our Gateway Class and Register Agms Payment Gateway with WooCommerce
 add_action( 'plugins_loaded', 'agms_gateway_init', 0 );
@@ -20,13 +22,13 @@ function agms_gateway_init() {
     if ( ! class_exists( 'WC_Payment_Gateway' ) ) return;
 
     // If we made it this far, then include our Gateway Class
-    include_once( 'woocommerce-agms-transaction.php' );
+    include_once('woocommerce-agms-gateway.php');
 
     // Now that we have successfully included our class,
     // Lets add it too WooCommerce
-    add_filter( 'woocommerce_payment_gateways', 'agms_transaction_gateway' );
-    function agms_transaction_gateway( $methods ) {
-        $methods[] = 'AgmsTransaction_Gateway';
+    add_filter( 'woocommerce_payment_gateways', 'wc_agms_gateway' );
+    function wc_agms_gateway( $methods ) {
+        $methods[] = 'WC_Agms_Gateway';
         return $methods;
     }
 }
