@@ -2,7 +2,7 @@
 /*
 Plugin Name: AGMS - WooCommerce Gateway
 Plugin URI: http://www.onlinepaymentprocessing.com/
-Description: Extends WooCommerce by Adding the AGMS Gateway.
+Description: Extends WooCommerce by Adding the AGMS Payment Gateway.
 Version: 0.1.0
 Author: Maanas Royy, AGMS
 Author URI: https://github.com/maanas
