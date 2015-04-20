@@ -228,6 +228,37 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
 
     }
 
+    /**
+     * Return handler for Hosted Payments
+     */
+    public function return_handler() {
+        @ob_clean();
+        header( 'HTTP/1.1 200 OK' );
+        var_dump($_POST);
+//        if ( ( $r['response_code'] == 1 ) ) {
+//            // Payment has been successful
+//            $customer_order->add_order_note( __( 'Agms Gateway payment completed.', 'agms_gateway' ) );
+//
+//            // Mark order as Paid
+//            $customer_order->payment_complete();
+//
+//            // Empty the cart (Very important step)
+//            $woocommerce->cart->empty_cart();
+//
+//            // Redirect to thank you page
+//            return array(
+//                'result'   => 'success',
+//                'redirect' => $this->get_return_url( $customer_order ),
+//            );
+//        } else {
+//            // Transaction was not succesful
+//            // Add notice to the cart
+//            wc_add_notice( $r['response_reason_text'], 'error' );
+//            // Add note to the order for your reference
+//            $customer_order->add_order_note( 'Error: '. $r['response_reason_text'] );
+//        }
+    }
+
     // Submit payment and handle standard payment response
     private function process_standard_payment( $order_id ) {
         global $woocommerce;
