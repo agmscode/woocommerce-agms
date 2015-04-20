@@ -61,6 +61,9 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
             $this->$setting_key = $value;
         }
 
+        // Set Default mode
+        $this->mode = 'direct';
+        
         // Lets check for SSL
         add_action( 'admin_notices', array( $this,  'do_ssl_check' ) );
 
@@ -82,6 +85,13 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
                 'label'     => __( 'Enable this payment gateway', 'agms_gateway' ),
                 'type'      => 'checkbox',
                 'default'   => 'no',
+            ),
+            'mode' => array(
+                'title'     => __( 'Direct / Form', 'agms_gateway' ),
+                'label'     => __( 'Select Gateway Mode', 'agms_gateway' ),
+                'type'      => 'radio',
+                'default'   => 'direct',
+                'options'   => array('direct' => 'Direct Mode', 'form' => 'Form Mode')
             ),
             'title' => array(
                 'title'     => __( 'Title', 'agms_gateway' ),
@@ -119,8 +129,25 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
         );
     } // End init_form_fields()
 
-    // Submit payment and handle response
-    public function process_payment( $order_id ) {
+    // Generic function to trigger action
+    public function process_payment($order_id){
+        if ($this->mode == 'form') {
+            return $this->process_form_payment($order_id);
+        }
+        elseif ($this->mode == 'direct') {
+            return $this->process_standard_payment($order_id);
+        }
+        else {
+            return $this->process_standard_payment($order_id);
+        }
+    }
+
+    // Submit payment and handle form payment response
+    private function process_form_payment( $order_id ) {
+        die('Not Implemented');
+    }
+    // Submit payment and handle standard payment response
+    private function process_standard_payment( $order_id ) {
         global $woocommerce;
 
         // Get this Order's information so that we know
