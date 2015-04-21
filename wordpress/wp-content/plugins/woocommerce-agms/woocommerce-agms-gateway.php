@@ -61,6 +61,9 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
         // Lets check for SSL
         add_action( 'admin_notices', array( $this,  'do_ssl_check' ) );
 
+        // Add Action for return handler
+        add_action( 'woocommerce_api_wc_agms_gateway', array( $this, 'return_handler' ) );
+
         // Save settings
         if ( is_admin() ) {
             // Versions over 2.0
@@ -197,7 +200,7 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
             // Default Values
             "UsageCount"        => 1,
             "HPPFormat"         => 1,
-            "RetURL"            => WC()->api_request_url( 'agms_gateway' )
+            "RetURL"            => WC()->api_request_url( 'WC_Agms_Gateway' )
         );
 
         // Send this payload to Agms Gateway for processing
@@ -234,6 +237,7 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
     public function return_handler() {
         @ob_clean();
         header( 'HTTP/1.1 200 OK' );
+        print "hello";
         var_dump($_POST);
 //        if ( ( $r['response_code'] == 1 ) ) {
 //            // Payment has been successful
