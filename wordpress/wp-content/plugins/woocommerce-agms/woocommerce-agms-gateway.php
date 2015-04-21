@@ -61,8 +61,6 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
         // Lets check for SSL
         add_action( 'admin_notices', array( $this,  'do_ssl_check' ) );
 
-        // Add Action for return handler
-        add_action( 'woocommerce_api_wc_agms_gateway', array( $this, 'return_handler' ) );
 
         // Save settings
         if ( is_admin() ) {
@@ -73,6 +71,7 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
             add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
         }
     } // End __construct()
+
 
     // Build the administration fields for this specific Gateway
     public function init_form_fields() {
@@ -200,7 +199,7 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
             // Default Values
             "UsageCount"        => 1,
             "HPPFormat"         => 1,
-            "RetURL"            => WC()->api_request_url( 'WC_Agms_Gateway' )
+            "RetURL"            => WC()->api_request_url( 'WC_Agms' )
         );
 
         // Send this payload to Agms Gateway for processing
@@ -231,37 +230,6 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
 
     }
 
-    /**
-     * Return handler for Hosted Payments
-     */
-    public function return_handler() {
-        @ob_clean();
-        header( 'HTTP/1.1 200 OK' );
-        print "hello";
-        var_dump($_POST);
-//        if ( ( $r['response_code'] == 1 ) ) {
-//            // Payment has been successful
-//            $customer_order->add_order_note( __( 'Agms Gateway payment completed.', 'agms_gateway' ) );
-//
-//            // Mark order as Paid
-//            $customer_order->payment_complete();
-//
-//            // Empty the cart (Very important step)
-//            $woocommerce->cart->empty_cart();
-//
-//            // Redirect to thank you page
-//            return array(
-//                'result'   => 'success',
-//                'redirect' => $this->get_return_url( $customer_order ),
-//            );
-//        } else {
-//            // Transaction was not succesful
-//            // Add notice to the cart
-//            wc_add_notice( $r['response_reason_text'], 'error' );
-//            // Add note to the order for your reference
-//            $customer_order->add_order_note( 'Error: '. $r['response_reason_text'] );
-//        }
-    }
 
     // Submit payment and handle standard payment response
     private function process_standard_payment( $order_id ) {
@@ -373,6 +341,5 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
         }
 
     }
-
 
 }
