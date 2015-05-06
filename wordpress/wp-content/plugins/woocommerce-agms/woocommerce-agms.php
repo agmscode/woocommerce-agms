@@ -46,5 +46,6 @@ function agms_gateways_action_links($links)
 // Add admin action links
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'agms_gateways_action_links');
 
-
+// Add Action for return handle (update for woocommerce >2.0)
+add_action( 'woocommerce_api_wc_agms_gateway', 'check_agms_response');
 

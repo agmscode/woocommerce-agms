@@ -63,6 +63,7 @@ class WC_Agms_Gateway extends WC_Payment_Gateway {
         // add_action( 'admin_notices', array( $this,  'do_ssl_check' ) );
 
         add_action('agms_init', array( $this, 'agms_successful_request'));
+
         // Add Action for return handle (update for woocommerce >2.0)
         add_action( 'woocommerce_api_' . strtolower( get_class( $this ) ), array( &$this, 'check_agms_response' ) );
 
