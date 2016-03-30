@@ -220,6 +220,18 @@ class AgmsTransaction_Gateway extends WC_Payment_Gateway {
 
     }
 
+
+    // Check if we are forcing SSL on checkout pages
+    // Custom function not required by the Gateway
+    public function do_ssl_check() {
+        if( $this->enabled == "yes" ) {
+            if( get_option( 'woocommerce_force_ssl_checkout' ) == "no" ) {
+                echo "<div class=\"error\"><p>". sprintf( __( "<strong>%s</strong> is enabled and WooCommerce is not forcing the SSL certificate on your checkout page. Please ensure that you have a valid SSL certificate and that you are <a href=\"%s\">forcing the checkout pages to be secured.</a>" ), $this->method_title, admin_url( 'admin.php?page=wc-settings&tab=checkout' ) ) ."</p></div>";  
+            }
+        }       
+    }
+
+
     // Build payload in xml format
     private function buildPayload($data, $op='ProcessTransaction'){
         $xmlHeader = '<?xml version="1.0" encoding="utf-8"?>
